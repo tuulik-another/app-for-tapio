@@ -1,11 +1,7 @@
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
-import GtfsRealtimeBindings from "gtfs-realtime-bindings";
-import { createReadStream } from "fs";
-import csvParser from "csv-parser";
 import dotenv from "dotenv";
-import { vehiclePositions } from "./traffic.js";
+import traffic from "./traffic.js";
 
 dotenv.config();
 const app = express();
@@ -13,7 +9,7 @@ app.use(cors());
 
 app.get("/api/vehicles", async (req, res) => {
     try {
-        const vehiclePositions = vehiclePositions();
+        const vehiclePositions = await traffic.vehiclePositions();
         res.json({ vehicles: vehiclePositions });
     } catch (error) {
         console.error("Error fetching GTFS data:", error);
@@ -21,7 +17,7 @@ app.get("/api/vehicles", async (req, res) => {
     }
 });
 
-app.get("api/fun-fact", (req, res) => {
+//app.get("api/fun-fact", (req, res) => {
     
 
 const PORT = 5000;

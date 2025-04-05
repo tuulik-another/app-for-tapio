@@ -1,3 +1,8 @@
+import fetch from "node-fetch";
+import GtfsRealtimeBindings from "gtfs-realtime-bindings";
+import { createReadStream } from "fs";
+import csvParser from "csv-parser";
+
 const vehicleType = (id) => {
     const operator = id.split("/")[0];
     switch (operator) {
@@ -28,7 +33,7 @@ createReadStream("./resources/routes.txt")
         console.error("Error reading routes file:", error);
     }); 
 
-export const vehiclePositions = async () => {
+const vehiclePositions = async () => {
     const response = await fetch("https://realtime.hsl.fi/realtime/vehicle-positions/v2/hsl");
         if (!response.ok) {
             const error = new Error(`${response.url}: ${response.status} ${response.statusText}`);
@@ -59,4 +64,6 @@ export const vehiclePositions = async () => {
                 lineName: route ? route.route_long_name : null,
             };
         });
-}    
+}
+
+export default { vehiclePositions };
