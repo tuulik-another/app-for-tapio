@@ -45,7 +45,7 @@ const vehiclePositions = async () => {
             new Uint8Array(buffer)
         );
 
-        const vehiclePositions = feed.entity.filter(
+        return feed.entity.filter(
             (entity) => entity.hasOwnProperty("vehicle")
         ).map(v => {
             const route = routes[v.vehicle.trip.routeId];
