@@ -49,8 +49,6 @@ const vehicleColor = (vehicleType: VehicleType) => {
   }
 }
 
-const tailwindColorNumber = 800;
-
 const vehicleStyle = (vehicleType: VehicleType, line?: string) => new Style({
   image: new Circle({
     radius: 12,
@@ -146,18 +144,14 @@ const MapComponent = () => {
   
     mapInstance.on("pointermove", (event) => {
       if (!tooltipRef.current) return;
-      tooltipRef.current.classList.remove(`bg-blue-${tailwindColorNumber}`, `bg-green-${tailwindColorNumber}`, `bg-purple-${tailwindColorNumber}`, `bg-orange-${tailwindColorNumber}`, `bg-yellow-${tailwindColorNumber}`);
       const features = mapInstance.getFeaturesAtPixel(event.pixel);
       if (features && features.length > 0) {
         const feature = features[0];
         const line = feature.get("lineName");
-        const type = feature.get("vehicleType");
-        console.log("type:", `bg-${vehicleColor(type)}`);
         if (line) {
           tooltipRef.current.innerHTML = line;
           tooltip.setPosition(event.coordinate); 
           tooltipRef.current.classList.remove("hidden");
-          tooltipRef.current.classList.add(`bg-${vehicleColor(type)}-${tailwindColorNumber}`);
         }
       } else {
         tooltipRef.current.classList.add("hidden");
@@ -170,7 +164,7 @@ const MapComponent = () => {
       <div ref={mapRef} className="h-screen w-screen"></div>
       <div
         ref={tooltipRef}
-        className="absolute hidden p-2 rounded border border-black pointer-events-none text-white"
+        className="absolute hidden p-2 rounded border border-black pointer-events-none bg-white"
       ></div>
     </div>
   );
