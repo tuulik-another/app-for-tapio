@@ -32,6 +32,12 @@ type VehiclePosition = {
   lineName?: string;
 }
 
+type Stop = {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
 const vehicleColor = (vehicleType: VehicleType) => {
   switch (vehicleType) {
     case VehicleType.BUS:
@@ -65,29 +71,58 @@ const vehicleStyle = (vehicleType: VehicleType, line?: string) => new Style({
   }),
 });
 
-const vectorSource = new VectorSource();
-const vectorLayer = new VectorLayer({
-  source: vectorSource,
+const vehicleSource = new VectorSource();
+const vehicleLayer = new VectorLayer({
+  source: vehicleSource,
+});
+const stopSource = new VectorSource();
+const stopLayer = new VectorLayer({
+  source: stopSource,
 });
 
-async function updateTransitMarkers() {
+const updateTransitMarkers = async () => {
   try {
       const response = await fetch("http://localhost:5000/api/vehicles");
       const json = await response.json();
 
-      vectorSource.clear();
+      vehicleSource.clear();
 
       json.vehicles.forEach((vehicle: VehiclePosition) => {
           const feature = new Feature({
               geometry: new Point(fromLonLat([vehicle.lon, vehicle.lat])),
           });
-          feature.set('lineName', vehicle.lineName);
+          feature.set('name', vehicle.lineName);
           feature.set('vehicleType', vehicle.vehicleType);
-          vectorSource.addFeature(feature);
+          vehicleSource.addFeature(feature);
           feature.setStyle(vehicleStyle(vehicle.vehicleType, vehicle.line));
       });
   } catch (error) {
       console.error("Failed to fetch vehicle data:", error);
+  }
+}
+
+const putStopsOnMap = async () => {
+  try {
+      const response = await fetch("http://localhost:5000/api/stops");
+      const json = await response.json();
+
+      stopSource.clear();
+
+      json.stops.forEach((stop: Stop) => {
+          const feature = new Feature({
+              geometry: new Point(fromLonLat([stop.lon, stop.lat])),
+          });
+          feature.setStyle(new Style({
+              image: new Circle({
+                  radius: 5,
+                  fill: new Fill({ color: 'black' }),
+              }),
+          }));
+          stopSource.addFeature(feature);
+          feature.set('name', stop.name);
+        });
+  } catch (error) {
+      console.error("Failed to fetch stop data:", error);
   }
 }
 
@@ -105,7 +140,8 @@ const MapComponent = () => {
         new TileLayer({
           source: new OSM(),
         }),
-        vectorLayer,
+        vehicleLayer,
+        stopLayer,
       ],
       view: new View({
         center: fromLonLat([24.9458, 60.1699]),
@@ -118,10 +154,7 @@ const MapComponent = () => {
     updateTransitMarkers();
     const interval = setInterval(updateTransitMarkers, 3000);
 
-    const canvas = map.getViewport().querySelector("canvas");
-    if (canvas) {
-      canvas.setAttribute("willReadFrequently", "true");
-    }
+    putStopsOnMap();
 
     return () => {
       map.setTarget("");
@@ -147,7 +180,7 @@ const MapComponent = () => {
       const features = mapInstance.getFeaturesAtPixel(event.pixel);
       if (features && features.length > 0) {
         const feature = features[0];
-        const line = feature.get("lineName");
+        const line = feature.get("name");
         if (line) {
           tooltipRef.current.innerHTML = line;
           tooltip.setPosition(event.coordinate); 

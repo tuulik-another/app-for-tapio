@@ -20,6 +20,7 @@ const vehicleType = (id) => {
 }
 
 const routes = {};
+const stops = {};
 
 createReadStream("./resources/routes.txt")
     .pipe(csvParser())
@@ -32,6 +33,18 @@ createReadStream("./resources/routes.txt")
     .on("error", (error) => {
         console.error("Error reading routes file:", error);
     }); 
+
+createReadStream("./resources/stops.txt")
+    .pipe(csvParser())
+    .on("data", (row) => {
+        stops[row.stop_id] = row;
+    })
+    .on("end", () => {
+        console.log("Stops loaded:", stops);
+    })
+    .on("error", (error) => {
+        console.error("Error reading stops file:", error);
+    });
 
 const vehiclePositions = async () => {
     const response = await fetch("https://realtime.hsl.fi/realtime/vehicle-positions/v2/hsl");
@@ -66,4 +79,13 @@ const vehiclePositions = async () => {
         });
 }
 
-export default { vehiclePositions };
+const getStops = () => {
+    return Object.entries(stops).map(([id, stop]) => ({
+        id,
+        name: `${stop.stop_code} ${stop.stop_name}`,
+        lat: parseFloat(stop.stop_lat),
+        lon: parseFloat(stop.stop_lon),
+    }));
+}
+
+export default { vehiclePositions, getStops };

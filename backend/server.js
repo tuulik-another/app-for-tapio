@@ -15,6 +15,15 @@ app.get("/api/vehicles", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch GTFS data" });
     }
 });
+app.get("/api/stops", async (req, res) => {
+    try {
+        const stops = traffic.getStops();
+        res.json({ stops });
+    } catch (error) {
+        console.error("Error fetching stops:", error);
+        res.status(500).json({ error: "Failed to fetch stops" });
+    }
+});
 
 app.get("/api/fun-fact", async (req, res) => {
     try {
