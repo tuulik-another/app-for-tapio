@@ -15,14 +15,15 @@ const generateFunTransportFact = async () => {
     const randomVehicle = vehicles[Math.floor(Math.random() * vehicles.length)];
 
     const completion = await openai.chat.completions.create({
-        model: 'google/gemini-2.5-pro-exp-03-25:free',
+        model: 'google/gemma-3-12b-it:free',
         messages: [
             {
                 role: 'user',
-                content: `Hauska fakta ${randomVehicle} merkeistä. Korkeintaan 2 virkettä.`,
+                content: `Hauska fakta ${randomVehicle} merkeistä. Korkeintaan 2 virkettä. Älä aloita sanomalla esim.: Tässä hauska fakta, vaan mene suoraan asiaan.`,
             },
         ],
     });
+    console.log('Completion:', completion);
 
     return completion.choices[0].message.content;
 };
