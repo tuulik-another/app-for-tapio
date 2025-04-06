@@ -2,7 +2,6 @@ import OpenAi from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log('api key', process.env.API_KEY);
 
 const openai = new OpenAi({
     baseURL: 'https://openrouter.ai/api/v1',
@@ -23,7 +22,12 @@ const generateFunTransportFact = async () => {
             },
         ],
     });
-    console.log('Completion:', completion);
+    if (completion.error) {
+        throw new Error(`Error generating fun transport fact: ${completion.error.message}`);
+    }
+    if (!completion.choices || completion.choices.length === 0) {
+        throw new Error("No choices returned from OpenAI API");
+    }
 
     return completion.choices[0].message.content;
 };
