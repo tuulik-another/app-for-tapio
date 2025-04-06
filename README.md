@@ -30,7 +30,7 @@ Before running the project, ensure you have the following installed on your syst
 
 Additionally, you will need an OpenAI API key to enable the AI-generated fun facts feature. You can obtain one from [OpenRouter](https://openrouter.ai/).
 
-You should store the api key in a file in ```backend/.env````
+You should store the api key in a file in backend/.env
 ```API_KEY=key```
 
 ---
