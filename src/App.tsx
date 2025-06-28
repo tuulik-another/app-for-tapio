@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="h-screen w-screen">
       <MapComponent />
-      <AiButton />
+      {/* <AiButton /> */}
     </div>
   )
 }
