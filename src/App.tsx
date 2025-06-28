@@ -1,5 +1,5 @@
 import MapComponent from './MapComponent'
-import AiButton from './AiButton'
+//import AiButton from './AiButton'
 
 function App() {
   return (
